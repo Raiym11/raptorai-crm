@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>RaptorAI — Администрирование</title>
+<style>
+  :root {
+    --bg: #080B0F; --bg2: #0D1117; --bg3: #111820;
+    --cyan: #00D4FF; --cyan-dim: #00D4FF18; --cyan-mid: #00D4FF44;
+    --white: #F0F4F8; --gray: #8899AA; --border: #1E2A36; --card: #0F1923;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: radial-gradient(circle at 10% 0%, #00D4FF0D, transparent 35%), var(--bg);
+    color: var(--white);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+  }
+  .brand { display: flex; align-items: center; gap: 9px; }
+  .brand-name { font-size: 15px; font-weight: 700; }
+  .brand-name .accent { color: var(--cyan); }
+  .brand-tag { font-size: 11px; color: var(--gray); border-left: 1px solid var(--border); padding-left: 9px; margin-left: 3px; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; padding: 18px 26px; border-bottom: 1px solid var(--border); }
+  .nav-link { font-size: 13px; color: var(--gray); text-decoration: none; border: 1px solid var(--border); border-radius: 8px; padding: 8px 14px; }
+  .nav-link:hover { border-color: var(--cyan-mid); color: var(--white); }
+
+  #gate { display: flex; align-items: center; justify-content: center; min-height: 92vh; padding: 20px; }
+  .gate-card { background: linear-gradient(180deg, #111C25, var(--card)); border: 1px solid var(--border); border-radius: 16px; padding: 30px; width: 100%; max-width: 360px; box-shadow: 0 20px 50px -20px rgba(0,0,0,0.6); text-align: center; }
+  .gate-card label { display: block; font-size: 12px; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: 0.03em; margin: 18px 0 7px; text-align: left; }
+  .gate-card input { width: 100%; background: var(--bg2); border: 1px solid var(--border); border-radius: 9px; padding: 12px 14px; color: var(--white); font-size: 14px; }
+  .gate-card button { width: 100%; margin-top: 20px; background: linear-gradient(135deg, #00D4FF, #00A8CC); color: #05141A; border: none; border-radius: 9px; padding: 13px; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 24px -8px #00D4FF55; }
+  .gate-err { color: #FF6B6B; font-size: 13px; margin-top: 12px; display: none; }
+
+  #panel { display: none; padding: 26px; max-width: 640px; margin: 0 auto; }
+  .section-title { font-size: 14px; font-weight: 600; margin: 30px 0 14px; color: var(--gray); text-transform: uppercase; letter-spacing: 0.03em; }
+  .section-title:first-child { margin-top: 0; }
+
+  .card { background: linear-gradient(180deg, #111C25, var(--card)); border: 1px solid var(--border); border-radius: 14px; padding: 22px; }
+  label { display: block; font-size: 12px; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: 0.03em; margin: 14px 0 6px; }
+  label:first-child { margin-top: 0; }
+  input { width: 100%; background: var(--bg2); border: 1px solid var(--border); border-radius: 9px; padding: 11px 13px; color: var(--white); font-size: 14px; }
+  button.primary { margin-top: 20px; background: linear-gradient(135deg, #00D4FF, #00A8CC); color: #05141A; border: none; border-radius: 9px; padding: 12px 20px; font-size: 14px; font-weight: 700; cursor: pointer; }
+  .form-msg { font-size: 13px; margin-top: 12px; display: none; }
+  .form-msg.error { color: #FF6B6B; }
+  .form-msg.success { color: var(--cyan); }
+
+  .emp-row { display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px; background: var(--card); }
+  .emp-name { font-size: 14px; font-weight: 500; }
+  .emp-username { font-size: 12px; color: var(--gray); }
+  .emp-status { font-size: 11px; padding: 3px 9px; border-radius: 20px; }
+  .emp-status.active { background: #0B2530; color: var(--cyan); }
+  .emp-status.inactive { background: #2A1414; color: #FF6B6B; }
+  .empty-msg { color: var(--gray); font-size: 13px; padding: 16px; text-align: center; }
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <div class="gate-card">
+    <div class="brand" style="justify-content:center;margin-bottom:6px">
+      <img src="https://www.raptorai.ru/assets/logo.png" width="72" height="72" alt="RaptorAI" style="display:block;object-fit:contain">
+    </div>
+    <div style="font-size:12px;color:var(--gray);margin-bottom:6px">Администрирование</div>
+    <label>Код доступа</label>
+    <input type="password" id="admin-code" autocomplete="off">
+    <button onclick="loadPanel()" style="width:100%;margin-top:20px;background:linear-gradient(135deg,#00D4FF,#00A8CC);color:#05141A;border:none;border-radius:9px;padding:13px;font-size:14px;font-weight:700;cursor:pointer">Войти</button>
+    <div class="gate-err" id="gate-err">Неверный код доступа.</div>
+  </div>
+</div>
+
+<div id="panel">
+  <div class="topbar" style="padding:0 0 18px;margin-bottom:20px">
+    <div class="brand">
+      <img src="https://www.raptorai.ru/assets/logo.png" width="56" height="56" alt="RaptorAI" style="display:block;object-fit:contain">
+      <div class="brand-tag">Администрирование</div>
+    </div>
+    <a class="nav-link" href="board.html">Kanban-доска →</a>
+  </div>
+
+  <div class="section-title">Добавить сотрудника</div>
+  <div class="card">
+    <form id="create-form">
+      <label>Имя сотрудника</label>
+      <input type="text" id="c-name" required placeholder="Например: Андрей">
+      <label>Логин</label>
+      <input type="text" id="c-username" required placeholder="andrey" autocomplete="off">
+      <label>Пароль</label>
+      <input type="text" id="c-password" required placeholder="Придумайте пароль" autocomplete="off">
+      <button type="submit" class="primary">Создать сотрудника</button>
+      <div class="form-msg" id="create-msg"></div>
+    </form>
+  </div>
+
+  <div class="section-title">Сотрудники</div>
+  <div id="employees-list"></div>
+</div>
+
+<script>
+  const WEBHOOK_SECRET = '52467ae9c9b28bbfee25b687da8442336bd26cbb659e815e';
+  const CREATE_URL = 'https://n8n.raptorai.ru/crm-api/crm-create-employee';
+  const LIST_URL = 'https://n8n.raptorai.ru/crm-api/crm-employees-list';
+  let adminCode = '';
+
+  async function loadPanel() {
+    adminCode = document.getElementById('admin-code').value.trim();
+    document.getElementById('gate-err').style.display = 'none';
+    const ok = await fetchEmployees();
+    if (ok) {
+      document.getElementById('gate').style.display = 'none';
+      document.getElementById('panel').style.display = 'block';
+    } else {
+      document.getElementById('gate-err').style.display = 'block';
+    }
+  }
+
+  async function fetchEmployees() {
+    try {
+      const res = await fetch(LIST_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Webhook-Secret': WEBHOOK_SECRET },
+        body: JSON.stringify({ adminCode: adminCode })
+      });
+      const data = await res.json();
+      if (!res.ok || data.ok === false) return false;
+      renderEmployees(data.employees || []);
+      return true;
+    } catch (e) { return false; }
+  }
+
+  function renderEmployees(employees) {
+    const el = document.getElementById('employees-list');
+    if (employees.length === 0) {
+      el.innerHTML = '<div class="empty-msg">Пока нет ни одного сотрудника.</div>';
+      return;
+    }
+    el.innerHTML = employees.map(function(e) {
+      const isActive = String(e.active).toUpperCase() === 'TRUE';
+      return '<div class="emp-row"><div><div class="emp-name">' + e.name + '</div><div class="emp-username">@' + e.username + '</div></div><span class="emp-status ' + (isActive ? 'active' : 'inactive') + '">' + (isActive ? 'Активен' : 'Отключён') + '</span></div>';
+    }).join('');
+  }
+
+  document.getElementById('create-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const msg = document.getElementById('create-msg');
+    msg.style.display = 'none';
+
+    const name = document.getElementById('c-name').value.trim();
+    const username = document.getElementById('c-username').value.trim();
+    const password = document.getElementById('c-password').value;
+
+    try {
+      const res = await fetch(CREATE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Webhook-Secret': WEBHOOK_SECRET },
+        body: JSON.stringify({ adminCode: adminCode, name, username, password })
+      });
+      const data = await res.json().catch(function() { return {}; });
+      if (!res.ok || data.ok === false) {
+        msg.textContent = data.error || 'Не удалось создать сотрудника.';
+        msg.className = 'form-msg error'; msg.style.display = 'block';
+        return;
+      }
+      msg.textContent = 'Сотрудник создан. Логин: ' + username + ', пароль: ' + password + ' — сообщите их сотруднику лично.';
+      msg.className = 'form-msg success'; msg.style.display = 'block';
+      document.getElementById('create-form').reset();
+      fetchEmployees();
+    } catch (err) {
+      msg.textContent = 'Ошибка соединения.';
+      msg.className = 'form-msg error'; msg.style.display = 'block';
+    }
+  });
+</script>
+</body>
+</html>
